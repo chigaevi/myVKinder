@@ -41,6 +41,8 @@ def start_VK_bot():
 
             if text == 'начать':
                 send_message(user_id, 'Хочешь найти своё счастье?', keyboard_start.get_keyboard())
+            elif text == 'привет':
+                send_message(user_id, 'Привет!', keyboard_start.get_keyboard())
             elif text == 'искать':
                 send_message(user_id, 'Тогда начинаем. Немного нужно подождать...')
                 # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче):

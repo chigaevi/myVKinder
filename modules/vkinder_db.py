@@ -122,9 +122,9 @@ def favorite_exist(name):
 
 
 # if __name__ == '__main__':
-
-    # drop_tables()
-    # create_tables()
+#
+#     drop_tables()
+#     create_tables()
     # add_user('708212548')
     # # print(find_user('708212548')[0])
     # exemple_list = [1, 'Вова', 'ссылка', ['фото1','фото2','фото3']]

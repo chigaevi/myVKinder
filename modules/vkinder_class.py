@@ -132,8 +132,8 @@ class vkinder:
 
 
 
-if __name__ == '__main__':
-    user_vkinder = vkinder('754197714')
+# if __name__ == '__main__':
+#     user_vkinder = vkinder('754197714')
     # print(user_vkinder.search_users_info())
     # print(user_vkinder.get_user_info())
     # print(user_vkinder.get_photo_user(owner_id='754197714'))
