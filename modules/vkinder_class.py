@@ -27,16 +27,10 @@ class vkinder:
             'fields': 'bdate, sex, city, is_closed',
         }
         res = requests.get(url + method, params=params)
-        # print(res.json())
         info_for_search = {}
-
         info_for_search['city'] = res.json()['response'][0]['city']['id']
         info_for_search['sex'] = res.json()['response'][0]['sex']
-        # b_year = res.json()['response'][0]['bdate']
-        # if len(b_year) == 10:
-        #     info_for_search['b_year'] = b_year[-4:]
-        # else:
-        #     info_for_search['b_year'] = None
+
         try:
             b_year = res.json()['response'][0]['bdate']
             if len(b_year) == 10:
@@ -86,24 +80,18 @@ class vkinder:
             'fields': 'is_closed',
         }
         owner_res = requests.get(url + method, params=params)
-        print()
         if owner_res.json()['response'][0]['is_closed']:  # проверка приватности страницы
             return True
         else:
             return False
 
 
-
     # метод формирует список
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
-        # offset смещаемся в выдаче случайно но не более середины для того чтобы не выдавать всегда первых
-        # offset = random.randrange(start=0, stop=round(search_caunt/2))
-        # print('offset - ',offset)
         user_info = self.get_user_info()
         user_city = user_info['city']
         user_sex = user_info['sex']
         user_b_year = user_info['b_year']
-        # print(user_b_year)
         if user_sex == 1:
             sex = 2
         else:
@@ -125,7 +113,7 @@ class vkinder:
             'fields': 'bdate, sex, city',
         }
         res = requests.get(url + method, params=params)
-        # print(res.json())
+
         # создаем словарь с именем фамилией, ссылкой на профиль найденых людей и списком из get_photo_user(owner_id)
         result_list = []
         for item in res.json()['response']['items']:
@@ -133,10 +121,6 @@ class vkinder:
                 item['first_name'] + ' ' + item['last_name'],
                 'https://vk.com/id' + str(item['id']), str(item['id'])
             ])
-
-        # result_dic = {'date': search_time, "count": len(result_list), "items": result_list}
-        # with open('search_result.json', 'w', encoding='utf-8') as file:
-        #     json.dump(result_dic, file, ensure_ascii=False)
 
         return result_list
 

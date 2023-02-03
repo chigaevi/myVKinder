@@ -9,6 +9,7 @@ from modules.vkinder_db import add_user, find_user, add_favorite, veiw_favorites
 group_token = os.getenv('gr_token')
 session = vk_api.VkApi(token=group_token)
 
+
 def send_message(user_id, message, keyboard=None, parse_links=None, attachment=None):
     post = {
         'user_id': user_id,
@@ -33,7 +34,7 @@ def start_VK_bot():
             text = event.text.lower()
             # создаем объект класса vkinder:
             user_vk = vkinder(user_id)
-            # Проверяем на наличие такого юзера в БД, если нет создаем (реализация find_user корявая надо переделать)
+            # Проверяем на наличие такого юзера в БД, если нет создаем
             if not user_exist(vk_id_user=user_id):
                 add_user(user_id)
             # вытаскиваем id юзера из БД (реализация find_user корявая надо переделать)
@@ -44,20 +45,18 @@ def start_VK_bot():
             elif text == 'привет':
                 send_message(user_id, 'Привет!', keyboard_start.get_keyboard())
             elif text == 'искать':
-                send_message(user_id, 'Тогда начинаем. Немного нужно подождать...')
-                # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче):
+                send_message(user_id, 'Тогда начинаем.')
+                # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче, максимально 1000):
                 result_list = user_vk.search_users_info(search_caunt=1000)
-                # длинна получившегося списка будет меньше search_caunt так как будут пропускаться закрытые профили
                 count = len(result_list)
-                print(len(result_list))
                 send_message(user_id, f'Для Тебя найдено {count} варианта(ов). Нажимай "дальше" ',
                              keyboard_main.get_keyboard())
                 # создаем итерируемый список чтобы можно было использовать метод next() при показе:
                 iter_result_list = iter(result_list)
 
-            elif text == 'дальше' and i <= count: #здесь можно реализовать всё через выборку из бд и двигаться for по id
+            elif text == 'дальше' and i <= count:  # здесь можно реализовать всё через выборку из бд и двигаться for по id
                 i += 1
-                item = next(iter_result_list) #двигаемся по листу
+                item = next(iter_result_list)  # двигаемся по листу
                 if user_vk.privacy_check(item[2]):
                     send_message(user_id, item[0])  # выдаем имя
                     send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
@@ -65,8 +64,8 @@ def start_VK_bot():
                     send_message(user_id, 'идём дальше ?')
                     photo_list = [None, None, None]
                 else:
-                    send_message(user_id, item[0]) #выдаем имя
-                    send_message(user_id, item[1], parse_links=1) #выдаем ссылку
+                    send_message(user_id, item[0])  # выдаем имя
+                    send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
                     # выдаем фото в цикле так как не у всех людей на странице есть три фото
                     photo_list = user_vk.get_photo_user(owner_id=item[2])
                     for attachment in photo_list:
@@ -84,11 +83,12 @@ def start_VK_bot():
 
             elif text == 'посмотреть избранное':
                 favorites_list = veiw_favorites(db_user_id)
-                if len(favorites_list) != 0: # проверяем есть ли что-то в избранном
+                if len(favorites_list) != 0:  # проверяем есть ли что-то в избранном
                     for favorite_item in favorites_list:
                         send_message(user_id, favorite_item[0])
                         send_message(user_id, favorite_item[1], parse_links=1)
-                else: send_message(user_id, 'в избранном ничего нет')
+                else:
+                    send_message(user_id, 'в избранном ничего нет')
 
             else:
                 send_message(user_id, 'Не понял Вас. Что нужно сделать?', keyboard_start.get_keyboard())

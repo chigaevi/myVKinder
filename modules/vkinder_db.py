@@ -23,8 +23,8 @@ class favorite(Base):
     photo_2 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
     photo_3 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
 
-    # def __str__(self):
-    #     return f'id: {self.id}, name: {self.id_user}'
+    def __str__(self):
+        return f'id: {self.id}, victim: {self.id_user}, name: {self.name}'
 
 class block_list(Base):
     __tablename__ = 'block_list'
@@ -59,7 +59,7 @@ def add_user(vk_id_user):
     item_data = user(vk_id_user=vk_id_user)
     session.add(item_data)
     session.commit()
-    print('user added')
+    # print('user added')
     session.close()
 
 def find_user(vk_id_user=None):
