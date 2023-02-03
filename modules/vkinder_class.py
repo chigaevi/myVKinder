@@ -79,9 +79,6 @@ class vkinder:
 
     # метод формирует список
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
-        # offset смещаемся в выдаче случайно но не более середины для того чтобы не выдавать всегда первых
-        offset = random.randrange(start=0, stop=round(search_caunt/2))
-        # print('offset - ',offset)
         user_info = self.get_user_info()
         user_city = user_info['city']
         user_sex = user_info['sex']
@@ -93,7 +90,6 @@ class vkinder:
             sex = 1
         method = 'users.search'
         params = {
-            # 'q': '',
             'access_token': admin_token,
             'v': '5.131',
             'sex': sex,
@@ -102,8 +98,6 @@ class vkinder:
             'has_photo': 1,
             'verified': 1,
             'is_closed': True,
-            'offset': offset,
-            # 'from_group': 1,
             'birth_year': user_b_year,
             'fields': 'bdate, sex, city',
         }
@@ -131,10 +125,6 @@ class vkinder:
                 'https://vk.com/id' + str(item['id']),
                 photo_list
             ])
-
-        # result_dic = {'date': search_time, "count": len(result_list), "items": result_list}
-        # with open('search_result.json', 'w', encoding='utf-8') as file:
-        #     json.dump(result_dic, file, ensure_ascii=False)
 
         return result_list
 
