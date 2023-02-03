@@ -54,7 +54,7 @@ def start_VK_bot():
                 # создаем итерируемый список чтобы можно было использовать метод next() при показе:
                 iter_result_list = iter(result_list)
                 i = 1
-            elif text == 'дальше' and i <= count: #здесь лучше реализовать всё через выборку из бд и двигаться for по id
+            elif text == 'дальше' and i <= count: #здесь можно реализовать всё через выборку из бд и двигаться for по id
                 i += 1
                 item = next(iter_result_list) #двигаемся по листу
                 send_message(user_id, item[0]) #выдаем имя

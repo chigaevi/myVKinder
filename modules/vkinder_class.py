@@ -77,6 +77,22 @@ class vkinder:
                     max_likes_photo_list.append('photo' + str(item['owner_id']) + '_' + str(item['id']))
         return max_likes_photo_list
 
+    def privacy_check(self, owner_id):
+        method = 'users.get'
+        params = {
+            'user_ids': owner_id,
+            'access_token': group_token,
+            'v': '5.131',
+            'fields': 'is_closed',
+        }
+        owner_res = requests.get(url + method, params=params)
+        if owner_res.json()['response'][0]['is_closed']:  # проверка приватности страницы
+            return True
+        else:
+            return False
+
+
+
     # метод формирует список
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
         # offset смещаемся в выдаче случайно но не более середины для того чтобы не выдавать всегда первых
@@ -113,17 +129,17 @@ class vkinder:
         for item in res.json()['response']['items']:
             # проверка private через user get и пропускает обработку если true:
             owner_id = str(item['id'])
-            method = 'users.get'
-            params = {
-                'user_ids': owner_id,
-                'access_token': group_token,
-                'v': '5.131',
-                'fields': 'is_closed',
-            }
-            owner_res = requests.get(url + method, params=params)
-            if owner_res.json()['response'][0]['is_closed']: #проверка приватности страницы
-                continue
-            time.sleep(0.40) #задержка использования get иначе VK выдаст словарь в 'response' с 'error'
+            # method = 'users.get'
+            # params = {
+            #     'user_ids': owner_id,
+            #     'access_token': group_token,
+            #     'v': '5.131',
+            #     'fields': 'is_closed',
+            # }
+            # owner_res = requests.get(url + method, params=params)
+            # if owner_res.json()['response'][0]['is_closed']: #проверка приватности страницы
+            #     continue
+            # time.sleep(0.40) #задержка использования get иначе VK выдаст словарь в 'response' с 'error'
             photo_list = self.get_photo_user(owner_id) #получаем список для attachment на самые популярные фото
 
             result_list.append([
