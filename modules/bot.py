@@ -75,11 +75,11 @@ def start_VK_bot():
 
             elif text == 'посмотреть избранное':
                 favorites_list = veiw_favorites(db_user_id)
-                for favorite_item in favorites_list:
-                    send_message(user_id, favorite_item[0])
-                    send_message(user_id, favorite_item[1], parse_links=1)
+                if len(favorites_list) != 0: # проверяем есть ли что-то в избранном
+                    for favorite_item in favorites_list:
+                        send_message(user_id, favorite_item[0])
+                        send_message(user_id, favorite_item[1], parse_links=1)
+                else: send_message(user_id, 'в избранном ничего нет')
 
             else:
                 send_message(user_id, 'Не понял Вас. Что нужно сделать?', keyboard_start.get_keyboard())
-
-# start_VK_bot()

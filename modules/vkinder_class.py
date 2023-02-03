@@ -32,11 +32,20 @@ class vkinder:
 
         info_for_search['city'] = res.json()['response'][0]['city']['id']
         info_for_search['sex'] = res.json()['response'][0]['sex']
-        b_year = res.json()['response'][0]['bdate']
-        if len(b_year) == 10:
-            info_for_search['b_year'] = b_year[-4:]
-        else:
+        # b_year = res.json()['response'][0]['bdate']
+        # if len(b_year) == 10:
+        #     info_for_search['b_year'] = b_year[-4:]
+        # else:
+        #     info_for_search['b_year'] = None
+        try:
+            b_year = res.json()['response'][0]['bdate']
+            if len(b_year) == 10:
+                info_for_search['b_year'] = b_year[-4:]
+            else:
+                info_for_search['b_year'] = None
+        except KeyError:
             info_for_search['b_year'] = None
+
         return info_for_search
 
     # метод формирует список для attachment метода messages.send в виде <type><owner_id>_<media_id> (https://dev.vk.com/method/messages.send)
@@ -72,12 +81,12 @@ class vkinder:
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
         # offset смещаемся в выдаче случайно но не более середины для того чтобы не выдавать всегда первых
         offset = random.randrange(start=0, stop=round(search_caunt/2))
-        print('offset - ',offset)
+        # print('offset - ',offset)
         user_info = self.get_user_info()
         user_city = user_info['city']
         user_sex = user_info['sex']
         user_b_year = user_info['b_year']
-        print(user_b_year)
+        # print(user_b_year)
         if user_sex == 1:
             sex = 2
         else:
