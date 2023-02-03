@@ -2,7 +2,7 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 
 keyboard_start = VkKeyboard(one_time=True)
-keyboard_start.add_button('Хочу', VkKeyboardColor.PRIMARY)
+keyboard_start.add_button('Искать', VkKeyboardColor.PRIMARY)
 
 keyboard_main = VkKeyboard(one_time=False)
 keyboard_main.add_button('дальше', VkKeyboardColor.SECONDARY)

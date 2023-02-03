@@ -5,13 +5,14 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 Base = declarative_base()
 
+
 class user(Base):
     __tablename__ = 'user'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     vk_id_user = sqlalchemy.Column(sqlalchemy.String(length=15), nullable=False)
 
-    # def __str__(self):
-    #     return f'id: {self.id}, vk_id: {self.vk_id_user}'
+    def __str__(self):
+        return f'id: {self.id}, vk_id: {self.vk_id_user}'
 
 class favorite(Base):
     __tablename__ = 'favorite'
@@ -25,6 +26,9 @@ class favorite(Base):
 
     # def __str__(self):
     #     return f'id: {self.id}, name: {self.id_user}'
+
+# class black_list(Base):
+#     pass
 
 def create_tables():
     engine = start_engine()
@@ -100,12 +104,29 @@ def veiw_favorites(id_user):
         result_list.append([result.name, result.link])
     return result_list
 
-if __name__ == '__main__':
+def user_exist(vk_id_user):
+    engine = start_engine()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    q = session.query(user).filter(user.vk_id_user == vk_id_user)
+    exist = session.query(q.exists()).scalar()
+    return exist
+
+def favorite_exist(name):
+    engine = start_engine()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    q = session.query(favorite).filter(favorite.name == name)
+    exist = session.query(q.exists()).scalar()
+    return exist
+
+
+# if __name__ == '__main__':
+
     # drop_tables()
     # create_tables()
     # add_user('708212548')
-    # print(find_user('708212548')[0])
+    # # print(find_user('708212548')[0])
     # exemple_list = [1, 'Вова', 'ссылка', ['фото1','фото2','фото3']]
     # add_favorite(exemple_list)
-    print(veiw_favorites(1))
-
+    # # print(veiw_favorites(1))
