@@ -5,7 +5,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 Base = declarative_base()
 
-
 class user(Base):
     __tablename__ = 'user'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
