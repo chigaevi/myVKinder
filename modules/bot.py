@@ -46,9 +46,10 @@ def start_VK_bot():
             elif text == 'искать':
                 send_message(user_id, 'Тогда начинаем. Немного нужно подождать...')
                 # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче):
-                result_list = user_vk.search_users_info(search_caunt=35)
+                result_list = user_vk.search_users_info(search_caunt=1000)
                 # длинна получившегося списка будет меньше search_caunt так как будут пропускаться закрытые профили
                 count = len(result_list)
+                print(len(result_list))
                 send_message(user_id, f'Для Тебя найдено {count} варианта(ов). Нажимай "дальше" ',
                              keyboard_main.get_keyboard())
                 # создаем итерируемый список чтобы можно было использовать метод next() при показе:
@@ -57,11 +58,16 @@ def start_VK_bot():
             elif text == 'дальше' and i <= count: #здесь можно реализовать всё через выборку из бд и двигаться for по id
                 i += 1
                 item = next(iter_result_list) #двигаемся по листу
-                send_message(user_id, item[0]) #выдаем имя
-                send_message(user_id, item[1], parse_links=1) #выдаем ссылку
-                # выдаем фото в цикле так как не у всех людей на странице есть три фото
-                for attachment in item[2]:
-                    send_message(user_id, '--------------------------', attachment=attachment)
+                if user_vk.privacy_check(item[2]):
+
+                    continue
+                else:
+                    send_message(user_id, item[0]) #выдаем имя
+                    send_message(user_id, item[1], parse_links=1) #выдаем ссылку
+                    # выдаем фото в цикле так как не у всех людей на странице есть три фото
+                    photo_list = user_vk.get_photo_user(owner_id=item[2])
+                    for attachment in photo_list:
+                        send_message(user_id, '--------------------------', attachment=attachment)
                 if i > count:
                     send_message(user_id, 'больше вариантов нет')
 

@@ -86,6 +86,7 @@ class vkinder:
             'fields': 'is_closed',
         }
         owner_res = requests.get(url + method, params=params)
+        print()
         if owner_res.json()['response'][0]['is_closed']:  # проверка приватности страницы
             return True
         else:
@@ -96,7 +97,7 @@ class vkinder:
     # метод формирует список
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
         # offset смещаемся в выдаче случайно но не более середины для того чтобы не выдавать всегда первых
-        offset = random.randrange(start=0, stop=round(search_caunt/2))
+        # offset = random.randrange(start=0, stop=round(search_caunt/2))
         # print('offset - ',offset)
         user_info = self.get_user_info()
         user_city = user_info['city']
@@ -118,34 +119,19 @@ class vkinder:
             'has_photo': 1,
             'verified': 1,
             'is_closed': True,
-            'offset': offset,
+            # 'offset': offset,
             # 'from_group': 1,
             'birth_year': user_b_year,
             'fields': 'bdate, sex, city',
         }
         res = requests.get(url + method, params=params)
+        # print(res.json())
         # создаем словарь с именем фамилией, ссылкой на профиль найденых людей и списком из get_photo_user(owner_id)
         result_list = []
         for item in res.json()['response']['items']:
-            # проверка private через user get и пропускает обработку если true:
-            owner_id = str(item['id'])
-            # method = 'users.get'
-            # params = {
-            #     'user_ids': owner_id,
-            #     'access_token': group_token,
-            #     'v': '5.131',
-            #     'fields': 'is_closed',
-            # }
-            # owner_res = requests.get(url + method, params=params)
-            # if owner_res.json()['response'][0]['is_closed']: #проверка приватности страницы
-            #     continue
-            # time.sleep(0.40) #задержка использования get иначе VK выдаст словарь в 'response' с 'error'
-            photo_list = self.get_photo_user(owner_id) #получаем список для attachment на самые популярные фото
-
             result_list.append([
                 item['first_name'] + ' ' + item['last_name'],
-                'https://vk.com/id' + str(item['id']),
-                photo_list
+                'https://vk.com/id' + str(item['id']), str(item['id'])
             ])
 
         # result_dic = {'date': search_time, "count": len(result_list), "items": result_list}
@@ -159,10 +145,11 @@ class vkinder:
 
 # if __name__ == '__main__':
 #     user_vkinder = vkinder('754197714')
-    # print(user_vkinder.search_users_info())
+#     print(user_vkinder.search_users_info())
     # print(user_vkinder.get_user_info())
-    # print(user_vkinder.get_photo_user(owner_id='754197714'))
 
+    # print(user_vkinder.get_photo_user(owner_id='754197714'))
+    # print(user_vkinder.privacy_check(owner_id='89801200'))
 # 708212548
 # 89801200
 
