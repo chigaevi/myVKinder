@@ -106,11 +106,6 @@ class vkinder:
             'has_photo': 1,
             'verified': 1,
             'is_closed': True,
-<<<<<<< HEAD
-=======
-            # 'offset': offset,
-            # 'from_group': 1,
->>>>>>> edit_vkinder_class
             'birth_year': user_b_year,
             'fields': 'bdate, sex, city',
         }
