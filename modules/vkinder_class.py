@@ -27,16 +27,10 @@ class vkinder:
             'fields': 'bdate, sex, city, is_closed',
         }
         res = requests.get(url + method, params=params)
-        # print(res.json())
         info_for_search = {}
-
         info_for_search['city'] = res.json()['response'][0]['city']['id']
         info_for_search['sex'] = res.json()['response'][0]['sex']
-        # b_year = res.json()['response'][0]['bdate']
-        # if len(b_year) == 10:
-        #     info_for_search['b_year'] = b_year[-4:]
-        # else:
-        #     info_for_search['b_year'] = None
+
         try:
             b_year = res.json()['response'][0]['bdate']
             if len(b_year) == 10:
@@ -77,13 +71,27 @@ class vkinder:
                     max_likes_photo_list.append('photo' + str(item['owner_id']) + '_' + str(item['id']))
         return max_likes_photo_list
 
+    def privacy_check(self, owner_id):
+        method = 'users.get'
+        params = {
+            'user_ids': owner_id,
+            'access_token': group_token,
+            'v': '5.131',
+            'fields': 'is_closed',
+        }
+        owner_res = requests.get(url + method, params=params)
+        if owner_res.json()['response'][0]['is_closed']:  # проверка приватности страницы
+            return True
+        else:
+            return False
+
+
     # метод формирует список
     def search_users_info(self, search_caunt=15):  # search_caunt - число пользователей в выдаче
         user_info = self.get_user_info()
         user_city = user_info['city']
         user_sex = user_info['sex']
         user_b_year = user_info['b_year']
-        # print(user_b_year)
         if user_sex == 1:
             sex = 2
         else:
@@ -98,32 +106,22 @@ class vkinder:
             'has_photo': 1,
             'verified': 1,
             'is_closed': True,
+<<<<<<< HEAD
+=======
+            # 'offset': offset,
+            # 'from_group': 1,
+>>>>>>> edit_vkinder_class
             'birth_year': user_b_year,
             'fields': 'bdate, sex, city',
         }
         res = requests.get(url + method, params=params)
+
         # создаем словарь с именем фамилией, ссылкой на профиль найденых людей и списком из get_photo_user(owner_id)
         result_list = []
         for item in res.json()['response']['items']:
-            # проверка private через user get и пропускает обработку если true:
-            owner_id = str(item['id'])
-            method = 'users.get'
-            params = {
-                'user_ids': owner_id,
-                'access_token': group_token,
-                'v': '5.131',
-                'fields': 'is_closed',
-            }
-            owner_res = requests.get(url + method, params=params)
-            if owner_res.json()['response'][0]['is_closed']: #проверка приватности страницы
-                continue
-            time.sleep(0.40) #задержка использования get иначе VK выдаст словарь в 'response' с 'error'
-            photo_list = self.get_photo_user(owner_id) #получаем список для attachment на самые популярные фото
-
             result_list.append([
                 item['first_name'] + ' ' + item['last_name'],
-                'https://vk.com/id' + str(item['id']),
-                photo_list
+                'https://vk.com/id' + str(item['id']), str(item['id'])
             ])
 
         return result_list
@@ -133,10 +131,11 @@ class vkinder:
 
 # if __name__ == '__main__':
 #     user_vkinder = vkinder('754197714')
-    # print(user_vkinder.search_users_info())
+#     print(user_vkinder.search_users_info())
     # print(user_vkinder.get_user_info())
-    # print(user_vkinder.get_photo_user(owner_id='754197714'))
 
+    # print(user_vkinder.get_photo_user(owner_id='754197714'))
+    # print(user_vkinder.privacy_check(owner_id='89801200'))
 # 708212548
 # 89801200
 

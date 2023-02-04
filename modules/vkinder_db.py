@@ -23,11 +23,14 @@ class favorite(Base):
     photo_2 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
     photo_3 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
 
-    # def __str__(self):
-    #     return f'id: {self.id}, name: {self.id_user}'
+    def __str__(self):
+        return f'id: {self.id}, victim: {self.id_user}, name: {self.name}'
 
-# class black_list(Base):
-#     pass
+class block_list(Base):
+    __tablename__ = 'block_list'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    id_user = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(user.id), nullable=False)
+    id_blocked_user = sqlalchemy.Column(sqlalchemy.String(length=20), nullable=False)
 
 def create_tables():
     engine = start_engine()
@@ -56,7 +59,7 @@ def add_user(vk_id_user):
     item_data = user(vk_id_user=vk_id_user)
     session.add(item_data)
     session.commit()
-    print('user added')
+    # print('user added')
     session.close()
 
 def find_user(vk_id_user=None):
