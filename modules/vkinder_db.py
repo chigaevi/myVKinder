@@ -52,6 +52,7 @@ def start_engine():
     engine = sqlalchemy.create_engine(DSN, echo=False,)
     return engine
 
+
 def add_user(vk_id_user):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
@@ -71,6 +72,15 @@ def find_user(vk_id_user=None):
     for result in results:
         result_list.append(result.id)
     return result_list
+
+def user_exist(vk_id_user):
+    engine = start_engine()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    q = session.query(user).filter(user.vk_id_user == vk_id_user)
+    exist = session.query(q.exists()).scalar()
+    return exist
+
 
 def add_favorite(item): #[]
     engine = start_engine()
@@ -106,14 +116,6 @@ def veiw_favorites(id_user):
         result_list.append([result.name, result.link])
     return result_list
 
-def user_exist(vk_id_user):
-    engine = start_engine()
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    q = session.query(user).filter(user.vk_id_user == vk_id_user)
-    exist = session.query(q.exists()).scalar()
-    return exist
-
 def favorite_exist(name):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
@@ -122,13 +124,35 @@ def favorite_exist(name):
     exist = session.query(q.exists()).scalar()
     return exist
 
+def add_user_in_blocklist(vk_id_user, id_blocked_user):
+    engine = start_engine()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    item_data = block_list(id_user=vk_id_user, id_blocked_user=id_blocked_user)
+    session.add(item_data)
+    session.commit()
+    print('user added in the blocklist')
+    session.close()
 
-# if __name__ == '__main__':
-#
-#     drop_tables()
-#     create_tables()
+def user_exists_in_blocklist(id_user, id_blocked_user):
+    engine = start_engine()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    q = session.query(block_list).filter(block_list.id_user == id_user).filter(block_list.id_blocked_user == id_blocked_user)
+    exist = session.query(q.exists()).scalar()
+    print(exist)
+    return exist
+
+if __name__ == '__main__':
+
+    # drop_tables()
+    # create_tables()
     # add_user('708212548')
-    # # print(find_user('708212548')[0])
+    # print(find_user('708212548')[0])
     # exemple_list = [1, 'Вова', 'ссылка', ['фото1','фото2','фото3']]
     # add_favorite(exemple_list)
-    # # print(veiw_favorites(1))
+    # print(veiw_favorites(1))
+    # add_user_in_blocklist(1, '5555')
+    user_exists_in_blocklist(1,'5555')
+
+
