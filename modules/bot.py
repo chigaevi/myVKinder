@@ -2,9 +2,9 @@ import vk_api
 import os
 import random
 from vk_api.longpoll import VkLongPoll, VkEventType
-from modules.keyboards import keyboard_start, keyboard_main
+from modules.keyboards import keyboard_start, keyboard_second, keyboard_main
 from modules.vkinder_class import vkinder
-from modules.vkinder_db import add_user, find_user, add_favorite, veiw_favorites, user_exist, favorite_exist
+from modules.vkinder_db import add_user, find_user, add_favorite, veiw_favorites, user_exist, favorite_exist, add_user_in_blocklist, user_exists_in_blocklist
 
 group_token = os.getenv('gr_token')
 session = vk_api.VkApi(token=group_token)
@@ -50,24 +50,26 @@ def start_VK_bot():
                 result_list = user_vk.search_users_info(search_caunt=1000)
                 count = len(result_list)
                 send_message(user_id, f'Для Тебя найдено {count} варианта(ов). Нажимай "дальше" ',
-                             keyboard_main.get_keyboard())
+                             keyboard_second.get_keyboard())
                 # создаем итерируемый список чтобы можно было использовать метод next() при показе:
                 iter_result_list = iter(result_list)
 
             elif text == 'дальше' and i <= count:  # здесь можно реализовать всё через выборку из бд и двигаться for по id
                 i += 1
-                item = next(iter_result_list)  # двигаемся по листу
-                if user_vk.privacy_check(item[2]):
-                    send_message(user_id, item[0])  # выдаем имя
+                item = next(iter_result_list)  # двигаемся по листу/item = ['first_name'+' '+item['last_name', 'https://vk.com/id'+'id', 'id']
+
+                elif user_vk.privacy_check(item[2]): # проверяем закрытость профиля
+                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
                     send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
                     send_message(user_id, 'Это закрытый профиль. Фото не доступны :(')
                     send_message(user_id, 'идём дальше ?')
-                    photo_list = [None, None, None]
+                    photo_list = [None, None, None] # значения которые запишутся в БД при добавлении в избранное
                 else:
-                    send_message(user_id, item[0])  # выдаем имя
+                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
                     send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
-                    # выдаем фото в цикле так как не у всех людей на странице есть три фото
+                    # получаем список фото в формате для attachment:
                     photo_list = user_vk.get_photo_user(owner_id=item[2])
+                    # выдаем фото в цикле так как не у всех людей на странице есть три фото:
                     for attachment in photo_list:
                         send_message(user_id, '--------------------------', attachment=attachment)
                 if i > count:
@@ -89,6 +91,16 @@ def start_VK_bot():
                         send_message(user_id, favorite_item[1], parse_links=1)
                 else:
                     send_message(user_id, 'в избранном ничего нет')
+
+            elif text == 'в чёрный список':
+
+                if user_exists_in_blocklist(db_user_id, item[2]):
+                    send_message(user_id, 'Такая запись уже есть')
+                else:
+                    add_user_in_blocklist(db_user_id, item[2])
+                    send_message(user_id, 'Добавил!')
+
+
 
             else:
                 send_message(user_id, 'Не понял Вас. Что нужно сделать?', keyboard_start.get_keyboard())

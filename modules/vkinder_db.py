@@ -124,11 +124,11 @@ def favorite_exist(name):
     exist = session.query(q.exists()).scalar()
     return exist
 
-def add_user_in_blocklist(vk_id_user, id_blocked_user):
+def add_user_in_blocklist(db_user_id, id_blocked_user):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
     session = Session()
-    item_data = block_list(id_user=vk_id_user, id_blocked_user=id_blocked_user)
+    item_data = block_list(id_user=db_user_id, id_blocked_user=id_blocked_user)
     session.add(item_data)
     session.commit()
     print('user added in the blocklist')
