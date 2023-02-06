@@ -57,8 +57,7 @@ def start_VK_bot():
             elif text == 'дальше' and i <= count:  # здесь можно реализовать всё через выборку из бд и двигаться for по id
                 i += 1
                 item = next(iter_result_list)  # двигаемся по листу/item = ['first_name'+' '+item['last_name', 'https://vk.com/id'+'id', 'id']
-
-                elif user_vk.privacy_check(item[2]): # проверяем закрытость профиля
+                if user_vk.privacy_check(item[2]): # проверяем закрытость профиля
                     send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
                     send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
                     send_message(user_id, 'Это закрытый профиль. Фото не доступны :(')
@@ -99,8 +98,6 @@ def start_VK_bot():
                 else:
                     add_user_in_blocklist(db_user_id, item[2])
                     send_message(user_id, 'Добавил!')
-
-
 
             else:
                 send_message(user_id, 'Не понял Вас. Что нужно сделать?', keyboard_start.get_keyboard())

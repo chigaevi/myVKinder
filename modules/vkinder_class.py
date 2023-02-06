@@ -1,6 +1,7 @@
 import random
 import requests
 import os
+from modules.vkinder_db import user_exists_in_blocklist
 from pprint import pprint
 import json
 from heapq import nlargest
