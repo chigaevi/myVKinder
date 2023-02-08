@@ -115,7 +115,7 @@ class vkinder:
         result_list = []
         db_user_id = find_user(vk_id_user=self.user_id)[0]
         for item in res.json()['response']['items']:
-            if not user_exists_in_blocklist(db_user_id, str(item['id'])):
+            # if not user_exists_in_blocklist(db_user_id, str(item['id'])):
                 result_list.append([
                     item['first_name'] + ' ' + item['last_name'],
                     'https://vk.com/id' + str(item['id']), str(item['id'])

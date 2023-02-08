@@ -26,10 +26,32 @@ def send_message(user_id, message, keyboard=None, parse_links=None, attachment=N
     session.method('messages.send', post)
 
 
-def start_VK_bot():
+def show_candidate(item, user_vk, user_id):
+    """Функция проверяет профиль кандидата и выдает его данные: имя, фамилию, ссылку на профиль и 3 фото с наибольшим
+    числом лайков или выводит сообщение, если профиль закрыт"""
+    if user_vk.privacy_check(item[2]):  # проверяем закрытость профиля
+        # send_message(user_id, f'Кандидат № {i}')
+        send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
+        send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
+        send_message(user_id, 'Это закрытый профиль. Фото не доступны :(')
+        send_message(user_id, 'идём дальше ?')
+        photo_list = [None, None, None]  # значения которые запишутся в БД при добавлении в избранное
+    else:
+        # send_message(user_id, f'Кандидат № {i}')
+        send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
+        send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
+        # получаем список фото в формате для attachment:
+        photo_list = user_vk.get_photo_user(owner_id=item[2])
+        # выдаем фото в цикле так как не у всех людей на странице есть три фото:
+        for attachment in photo_list:
+            send_message(user_id, '--------------------------', attachment=attachment)
+    return photo_list
+
+
+def start_vk_bot():
     print('VKinder bot started')
-    i = 0
-    fwrd = 1  # проверека направления движения 1 - вперед, 0 - назад
+    i = 0  # индекс кандидата в списке
+    fwrd = 1  # проверека направления движения по списку: 1 - вперед, 0 - назад
     for event in VkLongPoll(session).listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
             # Получаем id юзера и текст сообщения:
@@ -49,11 +71,12 @@ def start_VK_bot():
             elif text == 'искать':
                 send_message(user_id, 'Тогда начинаем.')
                 # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче, максимально 1000):
-                result_list = user_vk.search_users_info(search_caunt=10)
+                result_list = user_vk.search_users_info(search_caunt=1000)
                 count = len(result_list)
                 send_message(user_id, f'Для Тебя найдено {count} варианта(ов). Нажимай "просмотр" ',
                              keyboard_second.get_keyboard())
-            elif text == 'вперед' or text == 'просмотр':  # здесь можно реализовать всё через выборку из бд и двигаться for по id
+
+            elif text == 'вперед' or text == 'просмотр':
                 if fwrd == 0:
                     i += 1
                 if i > count - 1:
@@ -62,57 +85,20 @@ def start_VK_bot():
                 item = result_list[i]
                 i += 1
                 fwrd = 1
-                print('вперед', i, fwrd)
-                # item = next(iter_result_list)  # двигаемся по листу/item = ['first_name'+' '+item['last_name', 'https://vk.com/id'+'id', 'id']
-                if user_vk.privacy_check(item[2]):  # проверяем закрытость профиля
-                    # send_message(user_id, f'Кандидат № {i}')
-                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
-                    send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
-                    send_message(user_id, 'Это закрытый профиль. Фото не доступны :(')
-                    send_message(user_id, 'идём дальше ?')
-                    photo_list = [None, None, None]  # значения которые запишутся в БД при добавлении в избранное
-                else:
-                    # send_message(user_id, f'Кандидат № {i}')
-                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
-                    send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
-                    # получаем список фото в формате для attachment:
-                    photo_list = user_vk.get_photo_user(owner_id=item[2])
-                    # выдаем фото в цикле так как не у всех людей на странице есть три фото:
-                    for attachment in photo_list:
-                        send_message(user_id, '--------------------------', attachment=attachment)
+                photo_list = show_candidate(item, user_vk, user_id)
 
             elif text == 'назад':
-                print('назад', i, fwrd)
                 if fwrd == 1:
                     i -= 2
                 else:
                     i -= 1
                 if i < 0:
-                    send_message(user_id,'Вы находитесь в начале списка кандидатов')
+                    send_message(user_id, 'Вы находитесь в начале списка кандидатов')
                     i = 0
                     continue
-                print('назад', i, fwrd)
                 item = result_list[i]
                 fwrd = 0
-                # item = next(iter_result_list)  # двигаемся по листу/item = ['first_name'+' '+item['last_name', 'https://vk.com/id'+'id', 'id']
-                if user_vk.privacy_check(item[2]):  # проверяем закрытость профиля
-                    # send_message(user_id, f'Кандидат № {i+1}')
-                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
-                    send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
-                    send_message(user_id, 'Это закрытый профиль. Фото не доступны :(')
-                    send_message(user_id, 'идём дальше ?')
-                    photo_list = [None, None, None]  # значения которые запишутся в БД при добавлении в избранное
-                else:
-                    # send_message(user_id, f'Кандидат № {i+1}')
-                    send_message(user_id, item[0], keyboard_main.get_keyboard())  # выдаем имя
-                    send_message(user_id, item[1], parse_links=1)  # выдаем ссылку
-                    # получаем список фото в формате для attachment:
-                    photo_list = user_vk.get_photo_user(owner_id=item[2])
-                    # выдаем фото в цикле так как не у всех людей на странице есть три фото:
-                    for attachment in photo_list:
-                        send_message(user_id, '--------------------------', attachment=attachment)
-                # i -= 1
-
+                photo_list = show_candidate(item, user_vk, user_id)
 
             elif text == 'в избранное':
                 if favorite_exist(item[0]):
