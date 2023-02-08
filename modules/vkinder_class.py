@@ -1,7 +1,7 @@
 import random
 import requests
 import os
-from modules.vkinder_db import user_exists_in_blocklist
+from modules.vkinder_db import find_user, user_exists_in_blocklist
 from pprint import pprint
 import json
 from heapq import nlargest
@@ -31,7 +31,6 @@ class vkinder:
         info_for_search = {}
         info_for_search['city'] = res.json()['response'][0]['city']['id']
         info_for_search['sex'] = res.json()['response'][0]['sex']
-
         try:
             b_year = res.json()['response'][0]['bdate']
             if len(b_year) == 10:
@@ -114,11 +113,13 @@ class vkinder:
 
         # создаем словарь с именем фамилией, ссылкой на профиль найденых людей и списком из get_photo_user(owner_id)
         result_list = []
+        db_user_id = find_user(vk_id_user=self.user_id)[0]
         for item in res.json()['response']['items']:
-            result_list.append([
-                item['first_name'] + ' ' + item['last_name'],
-                'https://vk.com/id' + str(item['id']), str(item['id'])
-            ])
+            if not user_exists_in_blocklist(db_user_id, str(item['id'])):
+                result_list.append([
+                    item['first_name'] + ' ' + item['last_name'],
+                    'https://vk.com/id' + str(item['id']), str(item['id'])
+                ])
 
         return result_list
 

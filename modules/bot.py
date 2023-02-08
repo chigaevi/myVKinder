@@ -49,7 +49,7 @@ def start_VK_bot():
             elif text == 'искать':
                 send_message(user_id, 'Тогда начинаем.')
                 # создаем лист с результатами поиска (search_caunt - число пользователей в выдаче, максимально 1000):
-                result_list = user_vk.search_users_info(search_caunt=1000)
+                result_list = user_vk.search_users_info(search_caunt=10)
                 count = len(result_list)
                 send_message(user_id, f'Для Тебя найдено {count} варианта(ов). Нажимай "просмотр" ',
                              keyboard_second.get_keyboard())

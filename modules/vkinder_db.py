@@ -131,7 +131,7 @@ def add_user_in_blocklist(db_user_id, id_blocked_user):
     item_data = block_list(id_user=db_user_id, id_blocked_user=id_blocked_user)
     session.add(item_data)
     session.commit()
-    print('user added in the blocklist')
+    # print('user added in the blocklist')
     session.close()
 
 def user_exists_in_blocklist(id_user, id_blocked_user):
@@ -140,10 +140,10 @@ def user_exists_in_blocklist(id_user, id_blocked_user):
     session = Session()
     q = session.query(block_list).filter(block_list.id_user == id_user).filter(block_list.id_blocked_user == id_blocked_user)
     exist = session.query(q.exists()).scalar()
-    print(exist)
+    # print('user exists in the blocklist - ', exist)
     return exist
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
     # drop_tables()
     # create_tables()
@@ -153,6 +153,6 @@ if __name__ == '__main__':
     # add_favorite(exemple_list)
     # print(veiw_favorites(1))
     # add_user_in_blocklist(1, '5555')
-    user_exists_in_blocklist(1,'5555')
+    # user_exists_in_blocklist(1,'5555')
 
 
