@@ -1,14 +1,12 @@
-import random
 import requests
 import os
 from modules.vkinder_db import find_user, user_exists_in_blocklist
-from pprint import pprint
-import json
 from heapq import nlargest
-import time
-from datetime import datetime
 
+
+# предварительно прописываем в Environment Variables переменную с именем gr_token с ключем от сообщества
 group_token = os.getenv('gr_token')
+# предварительно прописываем в Environment Variables переменную с именем ad_token с ключем от пользователя
 admin_token = os.getenv('ad_token')
 
 url = 'https://api.vk.com/method/'
@@ -71,6 +69,7 @@ class vkinder:
                     max_likes_photo_list.append('photo' + str(item['owner_id']) + '_' + str(item['id']))
         return max_likes_photo_list
 
+    # проверка приватности страницы пользователя по id в VK
     def privacy_check(self, owner_id):
         method = 'users.get'
         params = {
@@ -113,7 +112,7 @@ class vkinder:
 
         # создаем словарь с именем фамилией, ссылкой на профиль найденых людей и списком из get_photo_user(owner_id)
         result_list = []
-        db_user_id = find_user(vk_id_user=self.user_id)[0]
+        # db_user_id = find_user(vk_id_user=self.user_id)[0]
         for item in res.json()['response']['items']:
             # if not user_exists_in_blocklist(db_user_id, str(item['id'])):
                 result_list.append([
@@ -122,17 +121,3 @@ class vkinder:
                 ])
 
         return result_list
-
-
-
-
-# if __name__ == '__main__':
-#     user_vkinder = vkinder('754197714')
-#     print(user_vkinder.search_users_info())
-    # print(user_vkinder.get_user_info())
-
-    # print(user_vkinder.get_photo_user(owner_id='754197714'))
-    # print(user_vkinder.privacy_check(owner_id='89801200'))
-# 708212548
-# 89801200
-

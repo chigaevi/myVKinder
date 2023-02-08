@@ -7,6 +7,7 @@ from modules.vkinder_class import vkinder
 from modules.vkinder_db import add_user, find_user, add_favorite, veiw_favorites, user_exist, favorite_exist, \
     add_user_in_blocklist, user_exists_in_blocklist
 
+# предварительно прописываем в Environment Variables переменную с именем gr_token с ключем от сообщества
 group_token = os.getenv('gr_token')
 session = vk_api.VkApi(token=group_token)
 

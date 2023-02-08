@@ -5,6 +5,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 Base = declarative_base()
 
+
 class user(Base):
     __tablename__ = 'user'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
@@ -13,18 +14,20 @@ class user(Base):
     def __str__(self):
         return f'id: {self.id}, vk_id: {self.vk_id_user}'
 
+
 class favorite(Base):
     __tablename__ = 'favorite'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     id_user = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(user.id), nullable=False)
     name = sqlalchemy.Column(sqlalchemy.String(length=60), nullable=False)
     link = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=False)
-    photo_1 =  sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
+    photo_1 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
     photo_2 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
     photo_3 = sqlalchemy.Column(sqlalchemy.String(length=100), nullable=True)
 
     def __str__(self):
         return f'id: {self.id}, victim: {self.id_user}, name: {self.name}'
+
 
 class block_list(Base):
     __tablename__ = 'block_list'
@@ -32,13 +35,16 @@ class block_list(Base):
     id_user = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(user.id), nullable=False)
     id_blocked_user = sqlalchemy.Column(sqlalchemy.String(length=20), nullable=False)
 
+
 def create_tables():
     engine = start_engine()
     Base.metadata.create_all(engine)
 
+
 def drop_tables():
     engine = start_engine()
     Base.metadata.drop_all(engine)
+
 
 def start_engine():
     db_type = 'postgresql'
@@ -49,7 +55,7 @@ def start_engine():
     # предварительно прописываем в Environment Variables переменную с именем PAS в значение пароль от БД
     db_pass = os.getenv('PAS')
     DSN = f"{db_type}://{db_login}:{db_pass}@{db_host}/{db_name}"
-    engine = sqlalchemy.create_engine(DSN, echo=False,)
+    engine = sqlalchemy.create_engine(DSN, echo=False, )
     return engine
 
 
@@ -63,6 +69,7 @@ def add_user(vk_id_user):
     # print('user added')
     session.close()
 
+
 def find_user(vk_id_user=None):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
@@ -73,6 +80,7 @@ def find_user(vk_id_user=None):
         result_list.append(result.id)
     return result_list
 
+
 def user_exist(vk_id_user):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
@@ -82,7 +90,7 @@ def user_exist(vk_id_user):
     return exist
 
 
-def add_favorite(item): #[]
+def add_favorite(item):  # []
     engine = start_engine()
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -97,14 +105,15 @@ def add_favorite(item): #[]
         id_user=id_user,
         link=link,
         name=name,
-        photo_1= photo_list[0],
-        photo_2= photo_list[1],
+        photo_1=photo_list[0],
+        photo_2=photo_list[1],
         photo_3=photo_list[2],
     )
     session.add(item_data)
     session.commit()
     # print('favorite added')
     session.close()
+
 
 def veiw_favorites(id_user):
     engine = start_engine()
@@ -116,6 +125,7 @@ def veiw_favorites(id_user):
         result_list.append([result.name, result.link])
     return result_list
 
+
 def favorite_exist(name):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
@@ -123,6 +133,7 @@ def favorite_exist(name):
     q = session.query(favorite).filter(favorite.name == name)
     exist = session.query(q.exists()).scalar()
     return exist
+
 
 def add_user_in_blocklist(db_user_id, id_blocked_user):
     engine = start_engine()
@@ -134,25 +145,14 @@ def add_user_in_blocklist(db_user_id, id_blocked_user):
     # print('user added in the blocklist')
     session.close()
 
+
 def user_exists_in_blocklist(id_user, id_blocked_user):
     engine = start_engine()
     Session = sessionmaker(bind=engine)
     session = Session()
-    q = session.query(block_list).filter(block_list.id_user == id_user).filter(block_list.id_blocked_user == id_blocked_user)
+
+    q = session.query(block_list).filter(block_list.id_user == id_user).filter(
+        block_list.id_blocked_user == id_blocked_user)
     exist = session.query(q.exists()).scalar()
     # print('user exists in the blocklist - ', exist)
     return exist
-
-# if __name__ == '__main__':
-
-    # drop_tables()
-    # create_tables()
-    # add_user('708212548')
-    # print(find_user('708212548')[0])
-    # exemple_list = [1, 'Вова', 'ссылка', ['фото1','фото2','фото3']]
-    # add_favorite(exemple_list)
-    # print(veiw_favorites(1))
-    # add_user_in_blocklist(1, '5555')
-    # user_exists_in_blocklist(1,'5555')
-
-
